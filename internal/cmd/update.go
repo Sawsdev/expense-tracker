@@ -22,6 +22,9 @@ func init(){
 	updateExpenseCmd.Flags().IntVarP(&expenseIdToUpdate, "id", "i", 0, "expense id to update")
 	updateExpenseCmd.Flags().StringVarP(&expenseNewDescription, "description", "d", "", "new expense description")
 	updateExpenseCmd.Flags().IntVarP(&expenseNewAmount, "amount", "a", 0, "new expense amount")
+	updateExpenseCmd.MarkFlagRequired("id")
+	updateExpenseCmd.MarkFlagRequired("description")
+	updateExpenseCmd.MarkFlagRequired("amount")
 	RootCmd.AddCommand(updateExpenseCmd)
 }
 
