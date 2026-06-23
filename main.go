@@ -4,6 +4,6 @@ import (
 	"github.com/sawsdev/expense-tracker/internal/cmd"
 )
 
-func main(){
+func main() {
 	cmd.RootCmd.Execute()
 }
