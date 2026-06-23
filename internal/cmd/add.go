@@ -29,6 +29,8 @@ var (
 func init() {
 	addExpenseCmd.Flags().StringVarP(&description, "description", "d","", "expense description")
 	addExpenseCmd.Flags().IntVarP(&amount, "amount", "a", 0, "expense amount")
+	addExpenseCmd.MarkFlagRequired("description")
+	addExpenseCmd.MarkFlagRequired("amount")
 	RootCmd.AddCommand(addExpenseCmd)
 }
 
