@@ -7,10 +7,11 @@ $ expense-tracker add --description "Lunch" --amount 20
 **/
 
 import (
-	"fmt"
+	//"fmt"
 
 	"github.com/spf13/cobra"
 	//"github.com/spf13/viper"
+	"github.com/sawsdev/expense-tracker/internal/controller"
 )
 
 var (
@@ -35,5 +36,6 @@ func init() {
 }
 
 func addExpense(cmd *cobra.Command, args []string) {
-	fmt.Printf(`Expense: %s with amount %d`, description, amount)
+	controller.AddNewExpenseToList(description, amount)
+
 }
