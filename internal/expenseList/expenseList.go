@@ -21,10 +21,10 @@ func NewExpenseList() ExpenseList {
 	}
 }
 
-func AddNewExpense(expenseList *ExpenseList, description string, amount int) {
+func AddNewExpense(expenseList *ExpenseList, description string, amount int, id int) {
 	now := time.Now().Local().UTC()
 	newExpense := expense.NewExpense(
-		len(expenseList.Expenses),
+		id, //added custom id to keep it consistent for the file
 		description,
 		now.Format(dateLayout),
 		amount)
