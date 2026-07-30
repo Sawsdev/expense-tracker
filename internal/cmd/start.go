@@ -27,6 +27,7 @@ func createExpenseList(cmd * cobra.Command, args [] string) {
 		file.CreateFile("expenses.csv")
 	} else {
 		fmt.Println("Expense file found, starting.")
+		file.ReadCSVFile("expenses.csv")
 	}
 
 }
