@@ -22,7 +22,7 @@ func CreateExpenseList() expenselist.ExpenseList{
 
 func AddNewExpenseToList(description string, amount int) {
 	id := convertFileToExpenseList()
-	expenselist.AddNewExpense(&expenses,description,amount, id)
+	expenselist.AddNewExpense(&expenses,description,amount, id, "")
 	dataForWriting := convertExpenseListToFile()
 	file.WriteCSVFile("expenses.csv", dataForWriting)
 	ShowExpenseList()
@@ -32,6 +32,11 @@ func ShowExpenseList() {
 	//Its called to fill the expense list before showing.
 	convertFileToExpenseList()
 	expenselist.ShowExpenses(&expenses)
+}
+
+func ShowSingleExpense(id int){
+	convertFileToExpenseList()
+	expenselist.GetSingleExpense(&expenses, id)
 }
 
 func convertFileToExpenseList() int {
@@ -53,7 +58,7 @@ func convertFileToExpenseList() int {
 			log.Fatal("Error parsing amount: ", err)
 		}
 		description := expense[2]
-		expenselist.AddNewExpense(&expenses, description, amount, actualId)
+		expenselist.AddNewExpense(&expenses, description, amount, actualId, expense[1])
 	}
 	fmt.Println(fileData)
 	return  lastId + 1
