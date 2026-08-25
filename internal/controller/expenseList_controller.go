@@ -29,7 +29,9 @@ func AddNewExpenseToList(description string, amount int) {
 }
 
 func ShowExpenseList() {
-	fmt.Println(expenses.Expenses)
+	//Its called to fill the expense list before showing.
+	convertFileToExpenseList()
+	expenselist.ShowExpenses(&expenses)
 }
 
 func convertFileToExpenseList() int {
@@ -54,7 +56,7 @@ func convertFileToExpenseList() int {
 		expenselist.AddNewExpense(&expenses, description, amount, actualId)
 	}
 	fmt.Println(fileData)
-	return  lastId
+	return  lastId + 1
 }
 
 func convertExpenseListToFile() [][] string {
