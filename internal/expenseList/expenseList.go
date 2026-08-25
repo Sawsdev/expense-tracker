@@ -21,14 +21,25 @@ func NewExpenseList() ExpenseList {
 	}
 }
 
-func AddNewExpense(expenseList *ExpenseList, description string, amount int) {
+func AddNewExpense(expenseList *ExpenseList, description string, amount int, id int) {
 	now := time.Now().Local().UTC()
 	newExpense := expense.NewExpense(
-		len(expenseList.Expenses),
+		id, //added custom id to keep it consistent for the file
 		description,
 		now.Format(dateLayout),
 		amount)
 	expenseList.Expenses = append(expenseList.Expenses, newExpense)
 	fmt.Println("New Expense added")
 	
+}
+
+func ShowExpenses(expenseList *ExpenseList) {
+
+	header := "ID\tDate\t\tDescription\t\tAmount\n"
+	content := ""
+	for _, expense := range expenseList.Expenses {
+		content += fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount)
+	}
+	fmt.Print(header+content)
+
 }
