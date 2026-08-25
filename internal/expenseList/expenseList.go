@@ -32,3 +32,14 @@ func AddNewExpense(expenseList *ExpenseList, description string, amount int, id 
 	fmt.Println("New Expense added")
 	
 }
+
+func ShowExpenses(expenseList *ExpenseList) {
+
+	header := "ID\tDate\t\tDescription\t\tAmount\n"
+	content := ""
+	for _, expense := range expenseList.Expenses {
+		content += fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount)
+	}
+	fmt.Print(header+content)
+
+}
