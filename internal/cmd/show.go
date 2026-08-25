@@ -2,8 +2,8 @@ package cmd
 
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/sawsdev/expense-tracker/internal/controller"
 )
 
 var(
@@ -28,6 +28,6 @@ func init() {
 }
 
 func showExpense(cmd * cobra.Command, args [] string){
-	fmt.Printf(`Expense found with id %d \n`, expenseId)
-	fmt.Printf(`Expenses found in date: %d-%d-%d \n`, year,month,day)
+	
+	controller.ShowExpenseList()
 }
