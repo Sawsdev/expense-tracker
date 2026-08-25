@@ -28,6 +28,9 @@ func init() {
 }
 
 func showExpense(cmd * cobra.Command, args [] string){
-	
-	controller.ShowExpenseList()
+	if(expenseId != 0){
+		controller.ShowSingleExpense(expenseId)
+	}else {
+		controller.ShowExpenseList()
+	}
 }
