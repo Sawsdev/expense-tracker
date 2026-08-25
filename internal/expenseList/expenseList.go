@@ -3,12 +3,15 @@ package expenselist
 import (
 	"fmt"
 	"time"
+	"strings"
 
 	"github.com/sawsdev/expense-tracker/internal/expense"
 )
 
 const (
 	dateLayout = "2006-01-02"
+	expenseHeader = "ID\tDate\t\tDescription\t\tAmount\n"
+
 )
 
 type ExpenseList struct {
@@ -21,12 +24,15 @@ func NewExpenseList() ExpenseList {
 	}
 }
 
-func AddNewExpense(expenseList *ExpenseList, description string, amount int, id int) {
+func AddNewExpense(expenseList *ExpenseList, description string, amount int, id int, date string) {
 	now := time.Now().Local().UTC()
+	if date == "" {
+		date = now.Format(dateLayout)
+	}
 	newExpense := expense.NewExpense(
 		id, //added custom id to keep it consistent for the file
 		description,
-		now.Format(dateLayout),
+		date,
 		amount)
 	expenseList.Expenses = append(expenseList.Expenses, newExpense)
 	fmt.Println("New Expense added")
@@ -34,17 +40,28 @@ func AddNewExpense(expenseList *ExpenseList, description string, amount int, id 
 }
 
 func ShowExpenses(expenseList *ExpenseList) {
-
-	header := "ID\tDate\t\tDescription\t\tAmount\n"
-	content := ""
+   
+	var writer strings.Builder
+	writer.WriteString(expenseHeader)
 	for _, expense := range expenseList.Expenses {
-		//TODO: Refactor this to optimize and make it efficient
-		content += fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount)
+		//CHANGE: Adjusted the way to show strings in a efficient way
+		writer.WriteString(fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount))
+		
 	}
-	fmt.Print(header + content)
+	fmt.Print(writer.String())
 }
 
-func GetExpense(expenseList *ExpenseList, id int) expense.Expense {
+func GetSingleExpense(expenseList *ExpenseList, id int){
+	obtainedExpense := getExpense(expenseList, id)
+	showExpense(obtainedExpense)
+}
+
+func showExpense(loggedExpense expense.Expense){
+	formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", loggedExpense.Id, loggedExpense.Date, loggedExpense.Description, loggedExpense.Amount)
+	fmt.Print(expenseHeader+"\n"+formattedString)
+}
+
+func getExpense(expenseList *ExpenseList, id int) expense.Expense {
 
 	defaultExpense := expense.NewExpense(0, "", "", 0)
 	for _, expense := range expenseList.Expenses {
