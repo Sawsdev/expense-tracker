@@ -23,8 +23,7 @@ func CreateExpenseList() expenselist.ExpenseList{
 func AddNewExpenseToList(description string, amount int) {
 	id := convertFileToExpenseList()
 	expenselist.AddNewExpense(&expenses,description,amount, id, "")
-	dataForWriting := convertExpenseListToFile()
-	file.WriteCSVFile("expenses.csv", dataForWriting)
+	saveExpenseListInCSV()
 	ShowExpenseList()
 }
 
@@ -37,6 +36,12 @@ func ShowExpenseList() {
 func ShowSingleExpense(id int){
 	convertFileToExpenseList()
 	expenselist.GetSingleExpense(&expenses, id)
+}
+
+func UpdateExpense(id int, description string, date string, amount int){
+	convertFileToExpenseList()
+	expenselist.UpdateExpense(&expenses, id, description, date, amount)
+	saveExpenseListInCSV()
 }
 
 func convertFileToExpenseList() int {
@@ -76,4 +81,9 @@ func convertExpenseListToFile() [][] string {
 	}
 
 	return convertedList
+}
+
+func saveExpenseListInCSV(){
+	dataForWriting := convertExpenseListToFile()
+	file.WriteCSVFile("expenses.csv", dataForWriting)
 }
