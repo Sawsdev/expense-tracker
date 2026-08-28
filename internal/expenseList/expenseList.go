@@ -52,7 +52,7 @@ func ShowExpenses(expenseList *ExpenseList) {
 }
 
 func GetSingleExpense(expenseList *ExpenseList, id int){
-	obtainedExpense := getExpense(expenseList, id)
+	obtainedExpense, _ := getExpense(expenseList, id)
 	showExpense(obtainedExpense)
 }
 
@@ -61,13 +61,32 @@ func showExpense(loggedExpense expense.Expense){
 	fmt.Print(expenseHeader+"\n"+formattedString)
 }
 
-func getExpense(expenseList *ExpenseList, id int) expense.Expense {
+func getExpense(expenseList *ExpenseList, id int) (expense.Expense, int) {
 
 	defaultExpense := expense.NewExpense(0, "", "", 0)
-	for _, expense := range expenseList.Expenses {
+	index := 0
+	for i, expense := range expenseList.Expenses {
 		if id == expense.Id {
 			defaultExpense = expense
+			index = i
 		}
 	}
-	return defaultExpense
+	return defaultExpense, index
+}
+
+func UpdateExpense(expenseList *ExpenseList, id int, description string, date string, amount int){
+
+	expenseToUpdate, index := getExpense(expenseList, id)
+	if index == 0 {
+		fmt.Println("Expense not found")
+		return
+	}
+
+	expenseToUpdate.Description = description
+	expenseToUpdate.Date = date
+	expenseToUpdate.Amount = amount
+
+	expenseList.Expenses[index] = expenseToUpdate
+	fmt.Println("Expense updated succesfully")
+
 }
