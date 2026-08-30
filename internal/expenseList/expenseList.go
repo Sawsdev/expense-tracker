@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"strings"
+	"slices"
 
 	"github.com/sawsdev/expense-tracker/internal/expense"
 )
@@ -45,7 +46,8 @@ func ShowExpenses(expenseList *ExpenseList) {
 	writer.WriteString(expenseHeader)
 	for _, expense := range expenseList.Expenses {
 		//CHANGE: Adjusted the way to show strings in a efficient way
-		writer.WriteString(fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount))
+		formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount)
+		writer.WriteString(formattedString)
 		
 	}
 	fmt.Print(writer.String())
@@ -72,6 +74,19 @@ func getExpense(expenseList *ExpenseList, id int) (expense.Expense, int) {
 		}
 	}
 	return defaultExpense, index
+}
+
+func DeleteExpense(expenseList *ExpenseList, id int){
+	_, index := getExpense(expenseList, id)
+	if index == 0 {
+		fmt.Println("Expense not found")
+		return 
+	}
+	expenseList.Expenses = slices.DeleteFunc(expenseList.Expenses, func(e expense.Expense)bool {
+		return e.Id == id
+	})
+	fmt.Println("Expense Deleted")
+
 }
 
 func UpdateExpense(expenseList *ExpenseList, id int, description string, date string, amount int){
