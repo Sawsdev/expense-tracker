@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 
@@ -44,6 +43,12 @@ func UpdateExpense(id int, description string, date string, amount int){
 	saveExpenseListInCSV()
 }
 
+func DeleteExpense(id int){
+	convertFileToExpenseList()
+	expenselist.DeleteExpense(&expenses, id)
+	saveExpenseListInCSV()
+}
+
 func convertFileToExpenseList() int {
 	fileData := file.ReadCSVFile("expenses.csv")
 	lastId , err := strconv.Atoi(fileData[len(fileData)-1][0])
@@ -65,7 +70,6 @@ func convertFileToExpenseList() int {
 		description := expense[2]
 		expenselist.AddNewExpense(&expenses, description, amount, actualId, expense[1])
 	}
-	fmt.Println(fileData)
 	return  lastId + 1
 }
 
