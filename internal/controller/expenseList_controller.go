@@ -60,6 +60,29 @@ func DeleteExpense(id int){
 	saveExpenseListInCSV()
 }
 
+func GetExpenseSummary(day int, month int, year int){
+	if(day > 0 && (month <= 0 || year <= 0)){
+		fmt.Println("month and year are required")
+		return
+	}else if(month > 0 && year <= 0){
+		fmt.Println("Year is required to get the summary")
+		return
+	}
+	convertFileToExpenseList()
+	summary, currentMonth := expenselist.SummarizeExpenses(&expenses,day, month, year)
+	if month > 0 && year > 0 {
+		if (day > 0) {
+		fmt.Printf("Total expenses for the %d of %s of year %d: %d\n", day, currentMonth, year, summary)
+		}
+		fmt.Printf("Total expenses for %s: %d\n", currentMonth, summary)
+	}else if(month <= 0 && year > 0){
+		fmt.Printf("Total expenses for year %d: %d\n", year, summary)
+	} else {
+		fmt.Printf("Total expenses: %d\n", summary)
+	}
+
+}
+
 func convertFileToExpenseList() int {
 	fileData := file.ReadCSVFile("expenses.csv")
 	lastId , err := strconv.Atoi(fileData[len(fileData)-1][0])
