@@ -36,7 +36,7 @@ func AddNewExpense(expenseList *ExpenseList, description string, amount int, id 
 		date,
 		amount)
 	expenseList.Expenses = append(expenseList.Expenses, newExpense)
-	fmt.Println("New Expense added")
+
 
 }
 
@@ -51,6 +51,7 @@ func ShowExpenses(expenseList *ExpenseList) {
 		
 	}
 	fmt.Print(writer.String())
+	writer.Reset()
 }
 
 func GetSingleExpense(expenseList *ExpenseList, id int){
