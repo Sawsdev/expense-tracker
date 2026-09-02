@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/sawsdev/expense-tracker/internal/controller"
 )
 
 var (
+	daySummary       int
 	monthSummary      int
 	yearSummary       int
 	expenseSummaryCmd = &cobra.Command{
@@ -18,11 +19,12 @@ var (
 )
 
 func init() {
-	expenseSummaryCmd.Flags().IntVarP(&monthSummary, "month", "m", 1, "get summary by the given month")
-	expenseSummaryCmd.Flags().IntVarP(&yearSummary, "year", "y", 1969, "get expense summary by the given year")
+	expenseSummaryCmd.Flags().IntVarP(&daySummary, "day", "d", 0, "get summary by the given month")
+	expenseSummaryCmd.Flags().IntVarP(&monthSummary, "month", "m", 0, "get summary by the given month")
+	expenseSummaryCmd.Flags().IntVarP(&yearSummary, "year", "y", 0, "get expense summary by the given year")
 	RootCmd.AddCommand(expenseSummaryCmd)
 }
 
 func getExpenseSummary(cmd *cobra.Command, args []string) {
-	fmt.Println("Total expenses: 5656")
+	controller.GetExpenseSummary(daySummary,monthSummary,yearSummary)
 }
