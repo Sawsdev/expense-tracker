@@ -2,9 +2,10 @@ package expenselist
 
 import (
 	"fmt"
-	"time"
-	"strings"
+	"log"
 	"slices"
+	"strings"
+	"time"
 
 	"github.com/sawsdev/expense-tracker/internal/expense"
 )
@@ -105,4 +106,60 @@ func UpdateExpense(expenseList *ExpenseList, id int, description string, date st
 	expenseList.Expenses[index] = expenseToUpdate
 	fmt.Println("Expense updated succesfully")
 
+}
+
+func SummarizeExpenses(expenseList *ExpenseList, day int, month int, year int) (int, string){
+	total := 0
+	currentMonth := ""
+	stringGivenDate := preformatStringDate(day, month, year)
+	givenDate, err := time.Parse(dateLayout, stringGivenDate)
+	if err != nil {
+		log.Fatal("Error parsing given date", err)
+	}
+	currentMonth = givenDate.Month().String()
+	for _, expense := range expenseList.Expenses {
+		if(month > 0 && year > 0){
+			actualDate, err := time.Parse(dateLayout, expense.Date)
+			if err != nil {
+				log.Fatal("Error parsing date")
+				return 0, ""
+			}
+			if((day>0 && day == actualDate.Day()) && month == int(actualDate.Month()) && year == actualDate.Year()){
+				total = total + expense.Amount
+
+			}else if (month == int(actualDate.Month()) && year == actualDate.Year()){
+				total = total + expense.Amount
+
+			} else if (day <= 0 && month <= 0 && actualDate.Year() == year) {
+				total = total + expense.Amount
+			}
+		} else {
+			total = total + expense.Amount
+		}
+	}
+	return total, currentMonth
+}
+
+func preformatStringDate (day int, month int, year int) string{
+	stringDay := ""
+	stringMonth := ""
+	stringYear := ""
+	if day <= 0  || day > 31{
+		stringDay = "01"
+	}else {
+		stringDay = fmt.Sprintf("%d", day)
+	}
+	if month <= 0 || month > 12 {
+		stringMonth = "01"
+	} else if(month < 9){
+		stringMonth = fmt.Sprintf("0%d", month)
+	}else {
+		stringMonth = fmt.Sprintf("%d", month)
+	}
+	if year < 1000 {
+		stringYear = "1000"
+	} else {
+		stringYear = fmt.Sprintf("%d", year)
+	}
+	return fmt.Sprintf("%s-%s-%s", stringYear, stringMonth, stringDay)
 }
