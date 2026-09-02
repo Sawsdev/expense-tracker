@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 
 	"github.com/sawsdev/expense-tracker/internal/expenseList"
@@ -20,10 +22,13 @@ func CreateExpenseList() expenselist.ExpenseList{
 }
 
 func AddNewExpenseToList(description string, amount int) {
+	if(!isValidExpenseInput(description,amount)){
+		return
+	}
 	id := convertFileToExpenseList()
 	expenselist.AddNewExpense(&expenses,description,amount, id, "")
 	saveExpenseListInCSV()
-	ShowExpenseList()
+	fmt.Println("New Expense added")
 }
 
 func ShowExpenseList() {
@@ -38,6 +43,12 @@ func ShowSingleExpense(id int){
 }
 
 func UpdateExpense(id int, description string, date string, amount int){
+	if(!isValidExpenseInput(description,amount)){
+		return
+	}
+	if(!isValidDateInput(date)){
+		return
+	}
 	convertFileToExpenseList()
 	expenselist.UpdateExpense(&expenses, id, description, date, amount)
 	saveExpenseListInCSV()
@@ -47,6 +58,29 @@ func DeleteExpense(id int){
 	convertFileToExpenseList()
 	expenselist.DeleteExpense(&expenses, id)
 	saveExpenseListInCSV()
+}
+
+func GetExpenseSummary(day int, month int, year int){
+	if(day > 0 && (month <= 0 || year <= 0)){
+		fmt.Println("month and year are required")
+		return
+	}else if(month > 0 && year <= 0){
+		fmt.Println("Year is required to get the summary")
+		return
+	}
+	convertFileToExpenseList()
+	summary, currentMonth := expenselist.SummarizeExpenses(&expenses,day, month, year)
+	if month > 0 && year > 0 {
+		if (day > 0) {
+		fmt.Printf("Total expenses for the %d of %s of year %d: %d\n", day, currentMonth, year, summary)
+		}
+		fmt.Printf("Total expenses for %s: %d\n", currentMonth, summary)
+	}else if(month <= 0 && year > 0){
+		fmt.Printf("Total expenses for year %d: %d\n", year, summary)
+	} else {
+		fmt.Printf("Total expenses: %d\n", summary)
+	}
+
 }
 
 func convertFileToExpenseList() int {
@@ -90,4 +124,31 @@ func convertExpenseListToFile() [][] string {
 func saveExpenseListInCSV(){
 	dataForWriting := convertExpenseListToFile()
 	file.WriteCSVFile("expenses.csv", dataForWriting)
+}
+
+func isValidExpenseInput(description string, amount int)bool {
+
+	if(len(description) > 80){
+		fmt.Println("Description exceeded 80 characters")
+		return false
+	}
+	if(amount < 0){
+		fmt.Println("Amount cant be less than 0")
+		return false
+	}
+	return true
+}
+
+func isValidDateInput(date string) bool{ 
+
+	rule, error := regexp.Compile("[0-9]{4}-[0-9]{2}-[0-9]{1,31}")
+	if error != nil {
+		log.Fatal("Error compiling the regular expression")
+	}
+
+	if(!rule.MatchString(date)){
+		fmt.Println("Incorrect date format. expected: YYYY-MM-DD")
+		return false
+	}
+	return true
 }
