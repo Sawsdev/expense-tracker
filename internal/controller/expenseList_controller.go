@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 
 	"github.com/sawsdev/expense-tracker/internal/expenseList"
@@ -20,10 +22,13 @@ func CreateExpenseList() expenselist.ExpenseList{
 }
 
 func AddNewExpenseToList(description string, amount int) {
+	if(!isValidExpenseInput(description,amount)){
+		return
+	}
 	id := convertFileToExpenseList()
 	expenselist.AddNewExpense(&expenses,description,amount, id, "")
 	saveExpenseListInCSV()
-	ShowExpenseList()
+	fmt.Println("New Expense added")
 }
 
 func ShowExpenseList() {
@@ -38,6 +43,12 @@ func ShowSingleExpense(id int){
 }
 
 func UpdateExpense(id int, description string, date string, amount int){
+	if(!isValidExpenseInput(description,amount)){
+		return
+	}
+	if(!isValidDateInput(date)){
+		return
+	}
 	convertFileToExpenseList()
 	expenselist.UpdateExpense(&expenses, id, description, date, amount)
 	saveExpenseListInCSV()
@@ -90,4 +101,31 @@ func convertExpenseListToFile() [][] string {
 func saveExpenseListInCSV(){
 	dataForWriting := convertExpenseListToFile()
 	file.WriteCSVFile("expenses.csv", dataForWriting)
+}
+
+func isValidExpenseInput(description string, amount int)bool {
+
+	if(len(description) > 80){
+		fmt.Println("Description exceeded 80 characters")
+		return false
+	}
+	if(amount < 0){
+		fmt.Println("Amount cant be less than 0")
+		return false
+	}
+	return true
+}
+
+func isValidDateInput(date string) bool{ 
+
+	rule, error := regexp.Compile("[0-9]{4}-[0-9]{2}-[0-9]{1,31}")
+	if error != nil {
+		log.Fatal("Error compiling the regular expression")
+	}
+
+	if(!rule.MatchString(date)){
+		fmt.Println("Incorrect date format. expected: YYYY-MM-DD")
+		return false
+	}
+	return true
 }
