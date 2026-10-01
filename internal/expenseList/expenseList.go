@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	dateLayout = "2006-01-02"
-	expenseHeader = "ID\tDate\t\tDescription\t\tAmount\n"
-
+	dateLayout    = "2006-01-02"
+	expenseHeader = "ID\tDate\t\tDescription\t\tCategory\t\tAmount\n"
 )
 
 type ExpenseList struct {
@@ -26,48 +25,48 @@ func NewExpenseList() ExpenseList {
 	}
 }
 
-func AddNewExpense(expenseList *ExpenseList, description string, amount int, id int, date string) {
+func AddNewExpense(expenseList *ExpenseList, description string, category string, amount int, id int, date string) {
 	now := time.Now().Local().UTC()
 	if date == "" {
 		date = now.Format(dateLayout)
 	}
 	newExpense := expense.NewExpense(
 		id, //added custom id to keep it consistent for the file
-		description,
 		date,
+		description,
+		strings.ToLower(category), //added category to group expenses
 		amount)
 	expenseList.Expenses = append(expenseList.Expenses, newExpense)
-
 
 }
 
 func ShowExpenses(expenseList *ExpenseList) {
-   
+
 	var writer strings.Builder
 	writer.WriteString(expenseHeader)
 	for _, expense := range expenseList.Expenses {
 		//CHANGE: Adjusted the way to show strings in a efficient way
-		formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Amount)
+		formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
 		writer.WriteString(formattedString)
-		
+
 	}
 	fmt.Print(writer.String())
 	writer.Reset()
 }
 
-func GetSingleExpense(expenseList *ExpenseList, id int){
+func GetSingleExpense(expenseList *ExpenseList, id int) {
 	obtainedExpense, _ := getExpense(expenseList, id)
 	showExpense(obtainedExpense)
 }
 
-func showExpense(loggedExpense expense.Expense){
-	formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%d\n", loggedExpense.Id, loggedExpense.Date, loggedExpense.Description, loggedExpense.Amount)
-	fmt.Print(expenseHeader+"\n"+formattedString)
+func showExpense(loggedExpense expense.Expense) {
+	formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", loggedExpense.Id, loggedExpense.Date, loggedExpense.Description, loggedExpense.Category, loggedExpense.Amount)
+	fmt.Print(expenseHeader + "\n" + formattedString)
 }
 
 func getExpense(expenseList *ExpenseList, id int) (expense.Expense, int) {
 
-	defaultExpense := expense.NewExpense(0, "", "", 0)
+	defaultExpense := expense.NewExpense(0, "", "", "", 0)
 	index := 0
 	for i, expense := range expenseList.Expenses {
 		if id == expense.Id {
@@ -78,20 +77,20 @@ func getExpense(expenseList *ExpenseList, id int) (expense.Expense, int) {
 	return defaultExpense, index
 }
 
-func DeleteExpense(expenseList *ExpenseList, id int){
+func DeleteExpense(expenseList *ExpenseList, id int) {
 	_, index := getExpense(expenseList, id)
 	if index == 0 {
 		fmt.Println("Expense not found")
-		return 
+		return
 	}
-	expenseList.Expenses = slices.DeleteFunc(expenseList.Expenses, func(e expense.Expense)bool {
+	expenseList.Expenses = slices.DeleteFunc(expenseList.Expenses, func(e expense.Expense) bool {
 		return e.Id == id
 	})
 	fmt.Println("Expense Deleted")
 
 }
 
-func UpdateExpense(expenseList *ExpenseList, id int, description string, date string, amount int){
+func UpdateExpense(expenseList *ExpenseList, id int, description string, date string, amount int) {
 
 	expenseToUpdate, index := getExpense(expenseList, id)
 	if index == 0 {
@@ -108,7 +107,7 @@ func UpdateExpense(expenseList *ExpenseList, id int, description string, date st
 
 }
 
-func SummarizeExpenses(expenseList *ExpenseList, day int, month int, year int) (int, string){
+func SummarizeExpenses(expenseList *ExpenseList, day int, month int, year int) (int, string) {
 	total := 0
 	currentMonth := ""
 	stringGivenDate := preformatStringDate(day, month, year)
@@ -118,19 +117,19 @@ func SummarizeExpenses(expenseList *ExpenseList, day int, month int, year int) (
 	}
 	currentMonth = givenDate.Month().String()
 	for _, expense := range expenseList.Expenses {
-		if(month > 0 && year > 0){
+		if month > 0 && year > 0 {
 			actualDate, err := time.Parse(dateLayout, expense.Date)
 			if err != nil {
 				log.Fatal("Error parsing date")
 				return 0, ""
 			}
-			if((day>0 && day == actualDate.Day()) && month == int(actualDate.Month()) && year == actualDate.Year()){
+			if (day > 0 && day == actualDate.Day()) && month == int(actualDate.Month()) && year == actualDate.Year() {
 				total = total + expense.Amount
 
-			}else if (month == int(actualDate.Month()) && year == actualDate.Year()){
+			} else if month == int(actualDate.Month()) && year == actualDate.Year() {
 				total = total + expense.Amount
 
-			} else if (day <= 0 && month <= 0 && actualDate.Year() == year) {
+			} else if day <= 0 && month <= 0 && actualDate.Year() == year {
 				total = total + expense.Amount
 			}
 		} else {
@@ -140,20 +139,20 @@ func SummarizeExpenses(expenseList *ExpenseList, day int, month int, year int) (
 	return total, currentMonth
 }
 
-func preformatStringDate (day int, month int, year int) string{
+func preformatStringDate(day int, month int, year int) string {
 	stringDay := ""
 	stringMonth := ""
 	stringYear := ""
-	if day <= 0  || day > 31{
+	if day <= 0 || day > 31 {
 		stringDay = "01"
-	}else {
+	} else {
 		stringDay = fmt.Sprintf("%d", day)
 	}
 	if month <= 0 || month > 12 {
 		stringMonth = "01"
-	} else if(month < 9){
+	} else if month < 9 {
 		stringMonth = fmt.Sprintf("0%d", month)
-	}else {
+	} else {
 		stringMonth = fmt.Sprintf("%d", month)
 	}
 	if year < 1000 {

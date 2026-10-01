@@ -17,6 +17,7 @@ import (
 var (
 	//flags
 	description string
+	category    string
 	amount      int
 	//command
 	addExpenseCmd = &cobra.Command{
@@ -28,14 +29,16 @@ var (
 )
 
 func init() {
-	addExpenseCmd.Flags().StringVarP(&description, "description", "d","", "expense description")
+	addExpenseCmd.Flags().StringVarP(&description, "description", "d", "", "expense description")
+	addExpenseCmd.Flags().StringVarP(&category, "category", "c", "", "expense category")
 	addExpenseCmd.Flags().IntVarP(&amount, "amount", "a", 0, "expense amount")
 	addExpenseCmd.MarkFlagRequired("description")
+	addExpenseCmd.MarkFlagRequired("category")
 	addExpenseCmd.MarkFlagRequired("amount")
 	RootCmd.AddCommand(addExpenseCmd)
 }
 
 func addExpense(cmd *cobra.Command, args []string) {
-	controller.AddNewExpenseToList(description, amount)
+	controller.AddNewExpenseToList(description, category, amount)
 
 }
