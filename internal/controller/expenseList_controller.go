@@ -32,10 +32,10 @@ func AddNewExpenseToList(description string, category string, amount int) {
 	fmt.Println("New Expense added")
 }
 
-func ShowExpenseList() {
+func ShowExpenseList(day int, month int, year int, category string) {
 	//Its called to fill the expense list before showing.
 	convertFileToExpenseList()
-	expenselist.ShowExpenses(&expenses)
+	expenselist.ShowExpenses(&expenses, day, month, year, category)
 }
 
 func ShowSingleExpense(id int) {
@@ -66,6 +66,7 @@ func GetExpenseSummary(day int, month int, year int) {
 		fmt.Println("month and year are required")
 		return
 	} else if month > 0 && year <= 0 {
+		//TODO: Adjust this condition to get the current year
 		fmt.Println("Year is required to get the summary")
 		return
 	}
