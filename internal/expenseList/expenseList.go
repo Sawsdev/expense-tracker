@@ -40,14 +40,38 @@ func AddNewExpense(expenseList *ExpenseList, description string, category string
 
 }
 
-func ShowExpenses(expenseList *ExpenseList) {
+func ShowExpenses(expenseList *ExpenseList, day int, month int, year int, category string) {
 
 	var writer strings.Builder
 	writer.WriteString(expenseHeader)
 	for _, expense := range expenseList.Expenses {
 		//CHANGE: Adjusted the way to show strings in a efficient way
-		formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
-		writer.WriteString(formattedString)
+		if len(category) > 0 && expense.Category == category {
+			formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
+			writer.WriteString(formattedString)
+		} else if month > 0 && year > 0 {
+			actualDate, err := time.Parse(dateLayout, expense.Date)
+			if err != nil {
+				log.Fatal("Error parsing date")
+				return
+			}
+			if (day > 0 && day == actualDate.Day()) && month == int(actualDate.Month()) && year == actualDate.Year() {
+				formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
+				writer.WriteString(formattedString)
+
+			} else if month == int(actualDate.Month()) && year == actualDate.Year() {
+				formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
+				writer.WriteString(formattedString)
+
+			} else if day <= 0 && month <= 0 && actualDate.Year() == year {
+				formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
+				writer.WriteString(formattedString)
+			}
+
+		} else {
+			formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
+			writer.WriteString(formattedString)
+		}
 
 	}
 	fmt.Print(writer.String())
