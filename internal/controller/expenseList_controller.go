@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
@@ -26,9 +27,9 @@ func AddNewExpenseToList(description string, category string, amount int) {
 	if !isValidExpenseInput(description, category, amount) {
 		return
 	}
-	id := convertFileToExpenseList()
+	id := convertJSONFileToExpenseList()
 	expenselist.AddNewExpense(&expenses, description, category, amount, id, "")
-	saveExpenseListInCSV()
+	saveExpenseListInJSON()
 	fmt.Println("New Expense added")
 }
 
@@ -98,6 +99,10 @@ func convertFileToExpenseList() int {
 		if i == 0 { //skip header
 			continue
 		}
+		if len(expense) < 5 {
+			fmt.Println("Wrong expense file, it has to have 5 columns.")
+			break
+		}
 		actualId, err := strconv.Atoi(expense[0])
 		if err != nil {
 			log.Fatal("Error parsing id: ", err)
@@ -110,6 +115,29 @@ func convertFileToExpenseList() int {
 		category := expense[3]
 		expenselist.AddNewExpense(&expenses, description, category, amount, actualId, expense[1])
 	}
+	return lastId + 1
+}
+
+func convertJSONFileToExpenseList() int {
+	fileData := file.FileExists("")
+	lastId := 0
+	if !fileData {
+		file.MakeDirectory("assets/db")
+	}
+	expenses = CreateExpenseList()
+	if file.FileExists("expenses.json") {
+		expenseFileData, err := file.ReadFile("expenses.json")
+		if err != nil {
+			log.Fatal("Error reading expenses json file", err)
+		}
+		err = json.Unmarshal(expenseFileData, &expenses.Expenses)
+		if err != nil {
+			log.Fatal("Error doing the unmarshal of the json expense file", err)
+		}
+		lastId = len(expenses.Expenses)
+	}
+	
+
 	return lastId + 1
 }
 
@@ -133,6 +161,14 @@ func convertExpenseListToFile() [][]string {
 func saveExpenseListInCSV() {
 	dataForWriting := convertExpenseListToFile()
 	file.WriteCSVFile("expenses.csv", dataForWriting)
+}
+
+func saveExpenseListInJSON() {
+	expenseListData, err := json.MarshalIndent(expenses.Expenses, "", "  ")
+	if err != nil {
+		log.Fatal("Error transforming expense list to json", err)
+	}
+	file.WriteFile("expenses.json", expenseListData)
 }
 
 func isValidExpenseInput(description string, category string, amount int) bool {
