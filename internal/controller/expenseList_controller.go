@@ -35,7 +35,7 @@ func AddNewExpenseToList(description string, category string, amount int) {
 
 func ShowExpenseList(day int, month int, year int, category string) {
 	//Its called to fill the expense list before showing.
-	convertFileToExpenseList()
+	convertJSONFileToExpenseList()
 	expenselist.ShowExpenses(&expenses, day, month, year, category)
 }
 
@@ -124,7 +124,7 @@ func convertJSONFileToExpenseList() int {
 	if !fileData {
 		file.MakeDirectory("assets/db")
 	}
-	expenses = CreateExpenseList()
+	CreateExpenseList()
 	if file.FileExists("expenses.json") {
 		expenseFileData, err := file.ReadFile("expenses.json")
 		if err != nil {
