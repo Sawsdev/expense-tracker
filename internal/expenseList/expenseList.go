@@ -52,7 +52,7 @@ func ShowExpenses(expenseList *ExpenseList, day int, month int, year int, catego
 		} else if month > 0 && year > 0 {
 			actualDate, err := time.Parse(dateLayout, expense.Date)
 			if err != nil {
-				log.Fatal("Error parsing date")
+				log.Fatal("Error parsing date", err)
 				return
 			}
 			if (day > 0 && day == actualDate.Day()) && month == int(actualDate.Month()) && year == actualDate.Year() {
