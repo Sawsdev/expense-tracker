@@ -68,7 +68,7 @@ func ShowExpenses(expenseList *ExpenseList, day int, month int, year int, catego
 				writer.WriteString(formattedString)
 			}
 
-		} else {
+		} else if month <=0 && year <= 0 && len(category) <=0 {
 			formattedString := fmt.Sprintf("%d\t%s\t%s\t\t\t%s\t\t%d\n", expense.Id, expense.Date, expense.Description, expense.Category, expense.Amount)
 			writer.WriteString(formattedString)
 		}
@@ -114,7 +114,7 @@ func DeleteExpense(expenseList *ExpenseList, id int) {
 
 }
 
-func UpdateExpense(expenseList *ExpenseList, id int, description string, date string, amount int) {
+func UpdateExpense(expenseList *ExpenseList, id int, description string, date string, amount int, category string) {
 
 	expenseToUpdate, index := getExpense(expenseList, id)
 	if index == 0 {
@@ -125,6 +125,7 @@ func UpdateExpense(expenseList *ExpenseList, id int, description string, date st
 	expenseToUpdate.Description = description
 	expenseToUpdate.Date = date
 	expenseToUpdate.Amount = amount
+	expenseToUpdate.Category = category
 
 	expenseList.Expenses[index] = expenseToUpdate
 	fmt.Println("Expense updated succesfully")
@@ -150,7 +151,7 @@ func SummarizeExpenses(expenseList *ExpenseList, day int, month int, year int) (
 			if (day > 0 && day == actualDate.Day()) && month == int(actualDate.Month()) && year == actualDate.Year() {
 				total = total + expense.Amount
 
-			} else if month == int(actualDate.Month()) && year == actualDate.Year() {
+			} else if month == int(actualDate.Month()) && year == actualDate.Year() && day <= 0{
 				total = total + expense.Amount
 
 			} else if day <= 0 && month <= 0 && actualDate.Year() == year {
@@ -169,6 +170,8 @@ func preformatStringDate(day int, month int, year int) string {
 	stringYear := ""
 	if day <= 0 || day > 31 {
 		stringDay = "01"
+	} else if day < 10 {
+		stringDay = fmt.Sprintf("0%d", day)
 	} else {
 		stringDay = fmt.Sprintf("%d", day)
 	}
