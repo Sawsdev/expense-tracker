@@ -40,7 +40,7 @@ func ShowExpenseList(day int, month int, year int, category string) {
 }
 
 func ShowSingleExpense(id int) {
-	convertFileToExpenseList()
+	convertJSONFileToExpenseList()
 	expenselist.GetSingleExpense(&expenses, id)
 }
 
@@ -51,15 +51,15 @@ func UpdateExpense(id int, description string, category string, date string, amo
 	if !isValidDateInput(date) {
 		return
 	}
-	convertFileToExpenseList()
-	expenselist.UpdateExpense(&expenses, id, description, date, amount)
-	saveExpenseListInCSV()
+	convertJSONFileToExpenseList()
+	expenselist.UpdateExpense(&expenses, id, description, date, amount, category)
+	saveExpenseListInJSON()
 }
 
 func DeleteExpense(id int) {
-	convertFileToExpenseList()
+	convertJSONFileToExpenseList()
 	expenselist.DeleteExpense(&expenses, id)
-	saveExpenseListInCSV()
+	saveExpenseListInJSON()
 }
 
 func GetExpenseSummary(day int, month int, year int) {
@@ -71,13 +71,14 @@ func GetExpenseSummary(day int, month int, year int) {
 		fmt.Println("Year is required to get the summary")
 		return
 	}
-	convertFileToExpenseList()
+	convertJSONFileToExpenseList()
 	summary, currentMonth := expenselist.SummarizeExpenses(&expenses, day, month, year)
 	if month > 0 && year > 0 {
 		if day > 0 {
 			fmt.Printf("Total expenses for the %d of %s of year %d: %d\n", day, currentMonth, year, summary)
+		} else {
+			fmt.Printf("Total expenses for %s: %d\n", currentMonth, summary)
 		}
-		fmt.Printf("Total expenses for %s: %d\n", currentMonth, summary)
 	} else if month <= 0 && year > 0 {
 		fmt.Printf("Total expenses for year %d: %d\n", year, summary)
 	} else {
