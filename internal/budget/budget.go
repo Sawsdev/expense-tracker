@@ -32,3 +32,14 @@ type Budget struct {
 	DateStart   string `json:"dateStart"`
 	DateEnd     string `json:"dateEnd"`
 }
+
+func NewBudget(id int, budgetType int, cap int, description string, dateStart string, dateEnd string) Budget {
+	return Budget{
+		Id:          id,
+		Type:        budgetTypeName[BudgetType(budgetType)],
+		Cap:         cap,
+		Description: description,
+		DateStart:   dateStart,
+		DateEnd:     dateEnd,
+	}
+}
